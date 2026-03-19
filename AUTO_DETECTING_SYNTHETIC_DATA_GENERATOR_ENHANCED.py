@@ -10,7 +10,6 @@ It uses Gaussian Mixture Models (GMM) for continuous data and categorical sampli
 Enhanced with DateTime and Boolean support.
 
 Author: Robel
-Organization: FED USDS ADVS (Aidvantage)
 """
 
 import pandas as pd
@@ -354,13 +353,10 @@ class AutoDetectingSyntheticGenerator:
         
         # Use custom library if provided (e.g., valid state codes, product IDs)
         if column_name in self.categorical_libraries:
-            library = self.categorical_libraries[column_name]
-            seed_dist = seed_series.value_counts(normalize=True)
-            # Fill missing library values with small probability
-            full_dist = seed_dist.reindex(library, fill_value=1e-6)
-            full_dist = full_dist / full_dist.sum()  # Renormalize
-            categories = library
-            probabilities = full_dist.values
+            library = [str(v) for v in self.categorical_libraries[column_name]]
+            # Assign equal probability to all values in reference table
+            categories = np.array(library)
+            probabilities = np.ones(len(categories)) / len(categories)
         else:
             # Use observed categories and frequencies
             categories = info['categories']
